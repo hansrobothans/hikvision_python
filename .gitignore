@@ -1,0 +1,11 @@
+__pycache__/
+img_output/
+build/
+dist/
+nuitka_dist/
+.claude/
+.vscode/
+/
+*.log
+*.csv
+*.pdf
