@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 import sys
+import os
+
+# Add parent directory to path to import MvImport
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(os.path.dirname(current_dir))
+sys.path.insert(0, parent_dir)
+
 from PySide6.QtWidgets import *
 from CamOperation_class import CameraOperation
 from MvImport.MvCameraControl_class import *
