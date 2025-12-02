@@ -29,11 +29,61 @@ def check_sys_and_update_dll():
     
     if currentsystem == 'Windows':
         #print(" current is windows system .")
-        MvCamCtrldllPath = "MvCameraControl.dll"
-        if "winmode" in ctypes.WinDLL.__init__.__code__.co_varnames:
-            MvCamCtrldll = WinDLL(MvCamCtrldllPath, winmode=0)
+        # Get the directory where this file is located
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # Check if there are Win64_x64 or Win32_i86 subdirectories in MvImport
+        if bit_info == "64":
+            local_dll_dir = os.path.join(current_dir, "Win64_x64")
         else:
-            MvCamCtrldll = WinDLL(MvCamCtrldllPath)
+            local_dll_dir = os.path.join(current_dir, "Win32_i86")
+
+        # If local subdirectory exists, use it; otherwise try system SDK path
+        if os.path.exists(local_dll_dir):
+            # Use local DLL directory with all dependencies
+            # Add DLL directory to search path
+            if hasattr(os, 'add_dll_directory'):
+                os.add_dll_directory(local_dll_dir)
+
+            # For Windows, also add to PATH to help find dependencies
+            original_path = os.environ.get('PATH', '')
+            if local_dll_dir not in original_path:
+                os.environ['PATH'] = local_dll_dir + os.pathsep + original_path
+
+            MvCamCtrldllPath = os.path.join(local_dll_dir, "MvCameraControl.dll")
+        else:
+            # Fallback to system SDK installation
+            if bit_info == "64":
+                sdk_path = r"C:\Program Files (x86)\Common Files\MVS\Runtime\Win64_x64"
+            else:
+                sdk_path = r"C:\Program Files (x86)\Common Files\MVS\Runtime\Win32_i86"
+
+            if os.path.exists(sdk_path):
+                if hasattr(os, 'add_dll_directory'):
+                    os.add_dll_directory(sdk_path)
+
+                original_path = os.environ.get('PATH', '')
+                if sdk_path not in original_path:
+                    os.environ['PATH'] = sdk_path + os.pathsep + original_path
+
+                MvCamCtrldllPath = os.path.join(sdk_path, "MvCameraControl.dll")
+            else:
+                # Last resort: try loading from current directory
+                MvCamCtrldllPath = os.path.join(current_dir, "MvCameraControl.dll")
+
+        try:
+            if "winmode" in ctypes.WinDLL.__init__.__code__.co_varnames:
+                MvCamCtrldll = WinDLL(MvCamCtrldllPath, winmode=0)
+            else:
+                MvCamCtrldll = WinDLL(MvCamCtrldllPath)
+        except Exception as e:
+            print(f"Failed to load DLL from: {MvCamCtrldllPath}")
+            print(f"Error: {e}")
+            print("Please ensure:")
+            print("1. All DLL files are in the correct directory")
+            print("2. Visual C++ Redistributable is installed")
+            print("3. The DLL architecture matches your Python (32-bit vs 64-bit)")
+            raise
     else:
         architecture = platform.machine()
         if architecture == 'aarch64':

@@ -1,0 +1,96 @@
+===========================================
+海康威视相机Python程序 - 新电脑部署指南
+===========================================
+
+【步骤1】复制完整的项目文件夹
+------------------------------------------
+将整个 hikvision_python 文件夹复制到新电脑，确保包含以下目录：
+✓ MvImport/Win64_x64/  (56个DLL文件)
+✓ MvImport/Win32_i86/  (所有DLL文件)
+✓ 所有Python源代码文件
+
+
+【步骤2】安装必需的系统运行库
+------------------------------------------
+在新电脑上安装 Visual C++ Redistributable:
+
+方案A - 在线安装（推荐）:
+  1. Visual C++ 2013 (64位): https://aka.ms/highdpimfc2013x64enu
+  2. Visual C++ 2015-2022 (64位): https://aka.ms/vs/17/release/vc_redist.x64.exe
+
+方案B - 离线安装:
+  在当前电脑下载上述安装包，拷贝到新电脑后双击安装
+
+
+【步骤3】安装Python依赖包
+------------------------------------------
+pip install PySide6
+
+
+【步骤4】运行环境检查工具
+------------------------------------------
+在项目目录下运行：
+python check_environment.py
+
+此工具会检查：
+✓ Python版本和架构
+✓ DLL文件是否完整
+✓ VC++ Runtime是否安装
+✓ DLL能否正常加载
+
+
+【步骤5】运行程序
+------------------------------------------
+python BasicDemo.py
+
+
+【常见问题】
+------------------------------------------
+
+Q1: 提示 "Could not find module MvCameraControl.dll"
+A1:
+  - 检查是否安装了 Visual C++ Redistributable 2013
+  - 确保 MvImport/Win64_x64/ 目录下的56个DLL文件都已复制
+  - 运行 check_environment.py 诊断问题
+
+Q2: 提示架构不匹配
+A2:
+  - 确保Python是64位版本 (运行 python -c "import sys; print(sys.maxsize > 2**32)")
+  - 如果是32位Python，需要使用 Win32_i86 目录的DLL
+
+Q3: 提示 Enum devices fail! ret = :800000000c
+A3:
+  - 这是DLL加载失败错误
+  - 安装 Visual C++ Redistributable
+  - 检查所有依赖DLL是否完整
+
+
+【技术支持文件】
+------------------------------------------
+详细说明: MvImport/README_DLL_Dependencies.md
+环境检查: check_environment.py
+
+
+【文件清单】
+------------------------------------------
+项目根目录/
+├── BasicDemo.py                    # 主程序
+├── PyUICBasicDemo.py              # UI定义
+├── CamOperation_class.py          # 相机操作类
+├── check_environment.py           # 环境检查工具（新增）
+├── 部署到新电脑说明.txt          # 本文件
+└── MvImport/
+    ├── Win64_x64/                 # 64位DLL目录（56个文件）
+    │   ├── MvCameraControl.dll
+    │   ├── MVGigEVisionSDK.dll
+    │   └── ... (其他依赖DLL)
+    ├── Win32_i86/                 # 32位DLL目录
+    ├── MvCameraControl_class.py   # SDK封装类
+    └── README_DLL_Dependencies.md # 依赖说明文档
+
+
+【联系方式】
+------------------------------------------
+如有问题，请查看:
+- MvImport/README_DLL_Dependencies.md (详细的依赖说明)
+- 运行 check_environment.py 进行环境诊断

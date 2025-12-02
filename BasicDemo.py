@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
-from PyQt5.QtWidgets import *
+from PySide6.QtWidgets import *
 from CamOperation_class import CameraOperation
 from MvImport.MvCameraControl_class import *
 from MvImport.MvErrorDefine_const import *
@@ -352,7 +352,7 @@ if __name__ == "__main__":
 
     mainWindow.show()
 
-    app.exec_()
+    app.exec()
 
     close_device()
 
